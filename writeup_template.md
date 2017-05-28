@@ -39,22 +39,28 @@ Here is an example using the `LUV` color space and HOG parameters of `orientatio
 
 ![alt text][image2]
 
-####2. I tried various combinations of parameters and after tesing I came up with mentioned above params
+####2. After some experiments I achieved 99.3% accuracy on the training set using parameters from the second block of the python notebook. Spatial binning dimensions made the most influence on the training. Increasing the value from `(8, 8)` to `(32, 32)`. The training rate increased from 92.5 to 99.3%. 
+    Also, using all 3 channels for HOG improved the recognition rate and elimenated the problem with white cars. 
+There is a small note. The learning rate is so good not only because of the best configs I used. The data set itself is really small. For the best accuracy and more precise results a bigger one should be used. 
 
 
 ####3.
 
-I trained a linear SVM using `LinearSVC` the 5th block using default loss functions - `hinge`. 
+I trained a linear SVM using `LinearSVC` the 5th block using default `hinge` loss functions with preprocessing data set with `StandartScaler` from `sklearn`.  
+
 
 ###Sliding Window Search
 
-####1. After some experimentation I set scale ration to `1.8`. It showed the best result among others.(ok just kidding I didn't actually ;):
+####1. I used two different techniques to find cars. 
+- Sliding window. Slides window through a region with set offset. 
+- HOG, sub-sampling. Instead of using offset for sliding through the region, it takes samples from the region with squares of size of HOG feature. 
 
 ![alt text][image3]
 
 ####2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
 
-Ultimately I searched on two scales using LUV 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result.  Here are some example images:
+Ultimately, I searched on two scales using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result.  Here are some example images:
+To reduce false positive I used `decision_function` with 1.2 threshold instead of `predict` functions that uses 1.0 by default.
 
 ![alt text][image4]
 ---
@@ -62,7 +68,8 @@ Ultimately I searched on two scales using LUV 3-channel HOG features plus spatia
 ### Video Implementation
 
 ####1.
-Here's a [link to my video result](./white.mp4)
+Here are [link to Sliding window search](./white.mp4)
+and [link to Sub-sampling HOG search](./white2.mp4)
 
 
 ####2. I recorded the positions of positive detections in each frame of the video.  From the positive detections I created a heatmap and then thresholded that map to identify vehicle positions.  I then used `scipy.ndimage.measurements.label()` to identify individual blobs in the heatmap.  I then assumed each blob corresponded to a vehicle.  I constructed bounding boxes to cover the area of each blob detected.  
